@@ -163,6 +163,7 @@ def updateFeatureClass(fulldata):
                                                 data_list.append(fulldata.get(data)[1][i])
                                         data_list.append(arcpy.Point(fulldata.get(data)[0][1], fulldata.get(data)[0][0]))
                                         iCursor.insertRow((tuple(data_list)))
+                                        
                                         data_list.clear()  
 
 def main():
@@ -176,6 +177,7 @@ def main():
     arcpy.AddMessage("Joining data...")
     # join station and airquality data
     fullData = joinData(stationData, airqualityData)
+    print(fullData)
     arcpy.AddMessage("Updating Feature Class...")
     # update featture class with required data
     updateFeatureClass(fullData)

@@ -78,15 +78,22 @@ class Tool(object):
         return
 
     def analyze(self, index, tree_layer, field_name, workspace):
+        pdf_path = r"C:\Users\Daewoong\Documents\GBS Korea\김천2020\100대명산\김천시 산&관광지도 최종.pdf"
         with arcpy.da.SearchCursor(index, [field_name]) as sCursor:
             for row in sCursor:
                 map_num = row[0]
+                arcpy.AddMessage(map_num)
                 select = arcpy.management.SelectLayerByAttribute(index, "NEW_SELECTION", f"{field_name} = '{map_num}'", None)
                 name_shp = f"{map_num}.shp"
                 arcpy.env.workspace = os.path.join(workspace, map_num)
                 newpath = self.make_folder(map_num)
+                arcpy.AddMessage("folder creation complete")
                 arcpy.analysis.PairwiseClip(tree_layer, select, name_shp)
-                shutil.make_archive(map_num, 'zip', newpath)
+                target_path = os.path.join(newpath, "김천시 산&관광지도 최종.pdf")
+                shutil.copyfile(pdf_path, target_path)
+                arcpy.AddMessage("pdf moved")
+                shutil.make_archive(newpath, 'zip', self.workspace, map_num)
+                arcpy.AddMessage("zip complete")
 
     def make_folder(self, name):
         newpath = os.path.join(self.workspace, name)

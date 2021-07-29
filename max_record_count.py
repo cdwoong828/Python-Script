@@ -7,7 +7,7 @@ myssl.verify_mode=ssl.CERT_NONE
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # Tools to monitor. URLs are from server admin page
-gptool_urls = "https://demo.gbs.kiwi/arcgis/admin/services/NIA/wifi_1620095929945.MapServer"
+id_url = "https://demo.gbs.kiwi/arcgis/admin/services/NIA/wifi_1620095929945.MapServer"
 
 
 # token generation url
@@ -19,24 +19,16 @@ resp = urllib.request.urlopen(token_url, urllib.parse.urlencode(token_requestPar
 json_data = json.loads(resp)
 token = json_data.get("token")
 
-webtool_requestParams = dict(f="json", token=token)
-resp = urllib.request.urlopen(gptool_urls, urllib.parse.urlencode(webtool_requestParams).encode('utf-8')).read()
-webtool_query_result = json.loads(resp)
-jobs = webtool_query_result.get("properties")
+requestParams = dict(f="json", token=token)
+resp = urllib.request.urlopen(id_url, urllib.parse.urlencode(requestParams).encode('utf-8')).read()
+query_result = json.loads(resp)
+jobs = query_result.get("properties")
 jobs["maxRecordCount"] = 25000
-print(jobs)
 
+# go to edit
+query_url = id_url + "/edit"
 
-# print("monitoring: {}".format(gptool_urls))
-webtool_query_url = gptool_urls + "/edit"
+# update query result 
+requestParams = dict(service=query_result, runAsync="false", f="json", token=token)
+resp = urllib.request.urlopen(query_url, urllib.parse.urlencode(requestParams).encode('utf-8')).read()
 
-
-
-webtool_requestParams = dict(service=webtool_query_result, runAsync="false", f="json", token=token)
-resp = urllib.request.urlopen(webtool_query_url, urllib.parse.urlencode(webtool_requestParams).encode('utf-8')).read()
-print(resp)
-# webtool_query_result = json.loads(resp)
-# jobs = webtool_query_result.get("properties")
-
-# #jobs["maxRecordCount"] = 25000
-# print(jobs)
